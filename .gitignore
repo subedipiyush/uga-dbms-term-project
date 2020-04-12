@@ -1,0 +1,14 @@
+**.class
+
+.gradle/
+.vscode/
+.settings/
+
+.project
+.classpath
+
+**/bin/**
+**/build/**
+/bin/
+
+app/gradle/wrapper/**

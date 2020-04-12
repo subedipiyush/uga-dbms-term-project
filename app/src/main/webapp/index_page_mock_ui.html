@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<title>European Soccer Stats Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<head>
+    <style>
+        .w3-container {
+            margin-top:17px;
+        }
+
+        .results-table {
+            overflow-y: auto;
+            overflow-x: auto;
+            max-height: 300px;
+        }
+
+        .results-table thead th {
+            position: sticky;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: right; padding: 2%;">
+        <a href="predictor_page_mock_ui.html">Go to Match Predictor</a>
+    </div>
+    <!-- javascript:void(0) -->
+    <div class="w3-container">
+        <h2>Search By</h2>
+
+        <div class="w3-row">
+            <a href="javascript:void(0)" onclick="openCity(event, 'London');">
+                <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding">Matches</div>
+            </a>
+            <a href="javascript:void(0)" onclick="openCity(event, 'Paris');">
+                <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding">Players</div>
+            </a>
+            <a href="javascript:void(0)" onclick="openCity(event, 'Tokyo');">
+                <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding">Teams</div>
+            </a>
+        </div>
+
+        <div id="London" class="w3-container city" style="display:none">
+
+            <table>
+                <tr>
+                    <td>
+                        <label for="country1">Country: </label>
+                        <select id="country1">
+                            <option value="England" selected>England</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="league1">League: </label>
+                        <select id="league1">
+                            <option value="English Premiere League" selected>English Premiere League</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="team1">Team: </label>
+                        <select id="team1">
+                            <option value="Liverpool" selected>Liverpool</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="team1">Team: </label>
+                        <select id="team1">
+                            <option value="Manchester United" selected>Manchester United</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="team1">Home or Away: </label>
+                        <input type="radio" id="home" name="loc" value="home">
+                        <label for="male">Home</label>
+                        <input type="radio" id="away" name="loc" value="away">
+                        <label for="female">Away</label>
+                        <input type="radio" id="neutral" name="loc" value="neutral">
+                        <label for="female">Neutral</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Date: </label>
+                        <label for="from_date">From: </label>
+                        <input type="date" id="from" name="from_date">
+                        <label for="to_date">To: </label>
+                        <input type="date" id="to" name="to_date">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Match Result: </label>
+                        <input type="radio" id="won" name="result" value="won">
+                        <label for="male">Won</label>
+                        <input type="radio" id="lost" name="result" value="lost">
+                        <label for="female">Lost</label>
+                        <input type="radio" id="draw" name="result" value="draw">
+                        <label for="female">Draw</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Show: </label>
+                        <input type="checkbox" id="show_players" name="show_players" value="Players">
+                        <label for="show_players"> Players</label>
+                        <input type="checkbox" id="goals" name="goals" value="Goals" checked>
+                        <label for="goals"> Goals</label>
+                        <input type="checkbox" id="possession" name="possession" value="Possession" checked>
+                        <label for="possession"> Possession</label><br>
+                        <input type="checkbox" id="shots_on_target" name="shots_on_target" value="Shots On Target" checked>
+                        <label for="shots_on_target"> Shots On Target</label>
+                        <input type="checkbox" id="shots_off_target" name="shots_off_target" value="Shots Off Target" checked>
+                        <label for="shots_off_target"> Shots Off Target</label>
+                        <input type="checkbox" id="fouls_committed" name="fouls_committed" value="Fouls Committed" checked>
+                        <label for="fouls_committed"> Fouls Committed</label><br>
+                    </td>
+                </tr>
+            </table>
+
+            <button onclick="javascript:showResults()">
+                Search
+            </button>
+
+        </div>
+
+        <div id="Paris" class="w3-container city" style="display:none">
+            <input type="text" placeholder="Enter player's name">
+
+            <button>
+                Search
+            </button>
+        </div>
+
+        <div id="Tokyo" class="w3-container city" style="display:none">
+            <input type="text" placeholder="Enter team's name">
+
+            <button>
+                Search
+            </button>
+        </div>
+    </div>
+
+    <div class="results-table w3-container" id="results-table" style="display:none">
+        <h4>Results (10)</h4>
+        <table id="results-table" class="table table-hover table-fixed">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Match</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Goals</th>
+                    <th scope="col">Possession</th>
+                    <th scope="col">Shots on Target</th>
+                    <th scope="col">Shots off Target</th>
+                    <th scope="col">Fouls Committed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>LIV Vs MUN</td>
+                    <td>04-12-1992</td>
+                    <td>3</td>
+                    <td>65</td>
+                    <td>20</td>
+                    <td>13</td>
+                    <td>7</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function openCity(evt, cityName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("city");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < x.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" w3-border-red", "");
+            }
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.firstElementChild.className += " w3-border-red";
+        }
+    </script>
+
+</body>
+
+<script type="text/javascript">
+
+function showResults() {
+    document.getElementById("results-table").style.display = "block";
+}
+
+</script>
+
+</html>
