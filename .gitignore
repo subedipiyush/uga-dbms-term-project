@@ -10,5 +10,3 @@
 **/bin/**
 **/build/**
 /bin/
-
-app/gradle/wrapper/**
