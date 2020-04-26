@@ -19,13 +19,6 @@
 
 <body>
 
-      <form  method = "POST">
-         Username: <input type = "text" name = "username">
-         <br />
-         Password: <input type="password"  name = "pass" />
-         <input type = "submit" value = "Submit" />
-      </form>
-      
     <a href="#">Match Predictor</a>
 
     <div>
