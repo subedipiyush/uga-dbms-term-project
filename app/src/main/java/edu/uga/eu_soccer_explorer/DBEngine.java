@@ -13,8 +13,15 @@ import java.util.NoSuchElementException;
 public class DBEngine {
 
     // JDBC driver name
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
 
+    // JDBC driver name and database URL
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+//    static final String DB_URL = "jdbc:mysql://localhost/eu_soccer";
+
+    //  Database credentials
+//    static final String USER = "root";
+//    static final String PASS = "abc"; // Enter password
     // SQL Connection
     private Connection con;
 
@@ -48,6 +55,11 @@ public class DBEngine {
             // then call DriverManager.getConnection to set the 'con'
             // use 'credMgr' to retrieve the url, username and password
 
+            // create our mysql database connection
+            String myDriver = JDBC_DRIVER;
+//            String myUrl = "jdbc:mysql://localhost:3306/eu_soccer";
+            Class.forName(myDriver);
+            con = DriverManager.getConnection(credMgr.getUrl(), credMgr.getUsername(), credMgr.getPassword());          
         }
 
         return con;
@@ -68,7 +80,13 @@ public class DBEngine {
         // use getConnection() to create statement and hence execute the query
         // note that the return type is expected to be DBResult
 
-        return null;
+    	Connection conn = getConnection();
+        Statement st = conn.createStatement();
+        
+        // execute the query, and get a java resultset
+        ResultSet rs = st.executeQuery(query);
+        
+        return new DBResult(rs);
     }
 
 
