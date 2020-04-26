@@ -13,15 +13,8 @@ import java.util.NoSuchElementException;
 public class DBEngine {
 
     // JDBC driver name
-    //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-
-    // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-//    static final String DB_URL = "jdbc:mysql://localhost/eu_soccer";
 
-    //  Database credentials
-//    static final String USER = "root";
-//    static final String PASS = "abc"; // Enter password
     // SQL Connection
     private Connection con;
 
@@ -57,7 +50,6 @@ public class DBEngine {
 
             // create our mysql database connection
             String myDriver = JDBC_DRIVER;
-//            String myUrl = "jdbc:mysql://localhost:3306/eu_soccer";
             Class.forName(myDriver);
             con = DriverManager.getConnection(credMgr.getUrl(), credMgr.getUsername(), credMgr.getPassword());          
         }
