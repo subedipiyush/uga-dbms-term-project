@@ -72,7 +72,35 @@ public class DBCredentialsManager {
                 Refer : https://crunchify.com/java-properties-file-how-to-read-config-properties-values-in-java/
             */
 
-
+-    		try {
+    			Properties prop = new Properties();
+    			String propFileName = "config.properties";
+    			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+     
+    			if (inputStream != null) {
+    				prop.load(inputStream);
+    			} else {
+    				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+    			}
+          
+    			// get the property value and print it out
+//    			String user = prop.getProperty("user");
+    			url = prop.getProperty("db_url");
+    			username = prop.getProperty("db_username");
+    			password = prop.getProperty("db_password");
+//    			String company3 = prop.getProperty("company3");
+     
+    		} catch (Exception e) {
+    			System.out.println("Exception: " + e);
+    		} finally {
+    			try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    
             credentialsHasBeenRead = true;
         }
     }

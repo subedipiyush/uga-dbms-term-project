@@ -47,6 +47,11 @@ public class DBEngine {
             // load the JDBC driver (use Class.forName)
             // then call DriverManager.getConnection to set the 'con'
             // use 'credMgr' to retrieve the url, username and password
+			            // create our mysql database connection
+            String myDriver = JDBC_DRIVER;
+//            String myUrl = "jdbc:mysql://localhost:3306/eu_soccer";
+            Class.forName(myDriver);
+            con = DriverManager.getConnection(credMgr.getUrl(), credMgr.getUsername(), credMgr.getPassword());   
 
         }
 
@@ -68,7 +73,13 @@ public class DBEngine {
         // use getConnection() to create statement and hence execute the query
         // note that the return type is expected to be DBResult
 
-        return null;
+    	Connection conn = getConnection();
+        Statement st = conn.createStatement();
+        
+        // execute the query, and get a java resultset
+        ResultSet rs = st.executeQuery(query);
+        
+        return new DBResult(rs);
     }
 
 
