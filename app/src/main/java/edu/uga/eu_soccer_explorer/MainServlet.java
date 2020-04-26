@@ -2,7 +2,6 @@ package edu.uga.eu_soccer_explorer;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.servlet.ServletException;
@@ -68,34 +67,21 @@ public class MainServlet extends HttpServlet {
         // TODO : Add code to get all filters from the page
         // construct your SQL query based on those filters
 
-        String query = "select * from country;";
+        String query = null;
 
-        System.out.println("Data: "+ request.getParameter("username")+ " " + request.getParameter("pass"));
         System.out.println("Running query : " + query);
+
         try {
 
             request.setAttribute("result", engine.executeQuery(query));
 	        request.setAttribute("success_msg", "Query execution successful");
-	        
-	        System.out.println("request: "+ request.getAttribute("success_msg"));
-	        
-	        DBResult resultSet = engine.executeQuery(query);//(ResultSet) request.getAttribute("result");
-	        System.out.println("resultSet: "+ resultSet);
-	        
-	        List<List<Object>> r1 = resultSet.getRows();
-	        
-	        for(int i = 0 ;i < r1.size(); i++) {
-	        	for (int j = 0; j < r1.get(i).size(); j++) {
-	        		System.out.print(r1.get(i).get(j));
-	        	}
-	        	System.out.println();
-	        }
-	        
-	        request.getRequestDispatcher("index.jsp").forward(request, response);		
+		
         } catch (SQLException | ClassNotFoundException | NoSuchElementException e) {
             
             request.setAttribute("error", e.getMessage());
         }
+
+        request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
 }
