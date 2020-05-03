@@ -1,6 +1,10 @@
 package edu.uga.eu_soccer_explorer;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 /**
  * Class reads and manages database credentials
@@ -72,7 +76,8 @@ public class DBCredentialsManager {
                 Refer : https://crunchify.com/java-properties-file-how-to-read-config-properties-values-in-java/
             */
 
--    		try {
+            InputStream inputStream = null;
+    		try {
     			Properties prop = new Properties();
     			String propFileName = "config.properties";
     			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);

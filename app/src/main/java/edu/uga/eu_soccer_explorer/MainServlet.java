@@ -1,9 +1,7 @@
 package edu.uga.eu_soccer_explorer;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.servlet.ServletException;
@@ -26,13 +24,21 @@ public class MainServlet extends HttpServlet {
      */
     private static final long serialVersionUID = 1L;
 
-    private DBEngine engine = null;
+    private PageParams pageParams = null;
+
+    final String MAIN_PAGE = "index.jsp"; 
 
     @Override
     public void init() throws ServletException {
         super.init();
 
-        engine = new DBEngine();
+        pageParams = new PageParams();
+        try {
+            pageParams.fetch();
+        } catch (ClassNotFoundException | NoSuchElementException | SQLException e) {
+            e.printStackTrace();
+            super.destroy();
+        }
     }
 
     /**
@@ -45,27 +51,10 @@ public class MainServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // TODO:
-        // provide the index page with all the initial data it might need
-        // see src/main/webapp/index_page_mock_ui.html for reference
-    	String query = "select * country";
-		
-        // add them as request parameter
-    	try {
-    		
-    		DBResult temp = engine.executeQuery(query);
-    		
-    		List<String> r3 = temp.getCols();
-    		List<List<Object>> r2 = temp.getRows();
-    		
-    		request.setAttribute("listCountries", r3);
-    		
-		
-        } catch (SQLException | ClassNotFoundException | NoSuchElementException e) {
-        	request.setAttribute("error", e.getMessage());
-        }
-    	String path = "index.jsp";
-        request.getRequestDispatcher(path).forward(request, response);
+        // send params as request parameter
+        request.setAttribute("params", pageParams);
+
+        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
     }
 
     /**
@@ -75,30 +64,37 @@ public class MainServlet extends HttpServlet {
      * @param request
      * @param response
      * @throws ServletException
-     * @throws IOException 
+     * @throws IOException
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // TODO : Add code to get all filters from the page
-        // construct your SQL query based on those filters
-
-        String query = null;
-
-        System.out.println("Running query : " + query);
-
+        DBResult results = null;
         try {
+            switch(request.getServletPath()) {
+                case "/matches":
+                    results = SoccerDB.searchMatches(request.getParameterMap());
+                    break;
+                case "/players":
+                    results = SoccerDB.searchPlayers(request.getParameterMap());
+                    break;
+                case "/teams":
+                    results = SoccerDB.searchTeams(request.getParameterMap());
+                    break;
+                default:
+                    // unsupported endpoint
+            }
 
-            request.setAttribute("result", engine.executeQuery(query));
-	        request.setAttribute("success_msg", "Query execution successful");
-		
+            request.setAttribute("results", results);
+            request.setAttribute("success_msg", "Query execution successful");
+
         } catch (SQLException | ClassNotFoundException | NoSuchElementException e) {
-            
+            e.printStackTrace();
             request.setAttribute("error", e.getMessage());
         }
 
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
     }
 
 }

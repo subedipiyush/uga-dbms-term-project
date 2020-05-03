@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Class handles all database related operations for the server
- * 
+ * Note: This is a singleton class
  * @author Piyush
  * @extended-by Farah
  */
@@ -21,13 +21,28 @@ public class DBEngine {
     // db credentials manager instance
     private DBCredentialsManager credMgr;
 
+    // since this is a singleton class, we will re-use this instance
+    private static DBEngine instance;
+
     /**
-     * Constructor
+     * Constructor/ Not exposed(Private)
      */
-    public DBEngine() {
+    private DBEngine() {
         con = null;
         credMgr = new DBCredentialsManager();
     }
+
+    /**
+     * Creates a new instance if no instance of this class exists
+     */
+    public static DBEngine getInstance() {
+        if (instance == null) {
+            instance = new DBEngine();
+        }
+
+        return instance;
+    }
+
 
     /**
      * Returns the established connection instance if the connection has not been
@@ -42,17 +57,8 @@ public class DBEngine {
     private Connection getConnection() throws ClassNotFoundException, SQLException {
 
         if (null == con) {
-
-            // TODO:
-            // load the JDBC driver (use Class.forName)
-            // then call DriverManager.getConnection to set the 'con'
-            // use 'credMgr' to retrieve the url, username and password
-			            // create our mysql database connection
-            String myDriver = JDBC_DRIVER;
-//            String myUrl = "jdbc:mysql://localhost:3306/eu_soccer";
-            Class.forName(myDriver);
-            con = DriverManager.getConnection(credMgr.getUrl(), credMgr.getUsername(), credMgr.getPassword());   
-
+            Class.forName(JDBC_DRIVER);
+            con = DriverManager.getConnection(credMgr.getUrl(), credMgr.getUsername(), credMgr.getPassword());
         }
 
         return con;
@@ -69,19 +75,16 @@ public class DBEngine {
      */
     public DBResult executeQuery(String query) throws SQLException, ClassNotFoundException, NoSuchElementException {
 
-        // TODO:
-        // use getConnection() to create statement and hence execute the query
-        // note that the return type is expected to be DBResult
-
     	Connection conn = getConnection();
         Statement st = conn.createStatement();
         
+        System.out.println("Query request " + query);
+
         // execute the query, and get a java resultset
         ResultSet rs = st.executeQuery(query);
         
         return new DBResult(rs);
     }
-
 
     /**
      * Release all the resources

@@ -24,13 +24,21 @@ public class PredictionServlet extends HttpServlet {
      */
     private static final long serialVersionUID = 1L;
 
-    private DBEngine engine = null;
+    final String MAIN_PAGE = "predictor.jsp"; 
+
+    private PageParams pageParams = null;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
-        engine = new DBEngine();
+        pageParams = new PageParams();
+        try {
+            pageParams.fetch();
+        } catch (ClassNotFoundException | NoSuchElementException | SQLException e) {
+            e.printStackTrace();
+            super.destroy();
+        }
     }
 
     /**
@@ -43,12 +51,10 @@ public class PredictionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // TODO:
-        // provide the index page with all the initial data it might need
-        // see src/main/webapp/prediction_page_mock_ui.html for reference
-        // add them as request parameter
+        // send params as request parameter
+        request.setAttribute("params", pageParams);
 
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
     }
 
     /**
@@ -64,29 +70,29 @@ public class PredictionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // TODO : Get the two teams from the request parameter
-
-        // use the query (to be provided by other members) as the query to predict
-        // replace the team names accordingly
-        String query = null;
-
-        System.out.println("Running query : " + query);
+        DBResult results = null;
 
         try {
 
-            DBResult result = engine.executeQuery(query);
+            results = SoccerDB.makePrediction(request.getParameterMap());
 
-            // parse the result to determine who the winner was 1 or 2
+            if (results != null) {
+                if (results.getRows().get(0).get(0).toString().equalsIgnoreCase("Team 1 victory")) {
+                    request.setAttribute("result", "1");
+                } else if (results.getRows().get(0).get(0).toString().equalsIgnoreCase("Team 2 victory")) {
+                    request.setAttribute("result", "2");
+                } else {
+                    request.setAttribute("result", "0");
+                }
+            }
 
-            // pass the result to the page
-            // request.setAttribute("result", "1 or 2");
 		
         } catch (SQLException | ClassNotFoundException | NoSuchElementException e) {
             
             request.setAttribute("error", e.getMessage());
         }
 
-        request.getRequestDispatcher("predictor.jsp").forward(request, response);
+        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
     }
 
 }
