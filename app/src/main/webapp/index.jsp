@@ -30,6 +30,17 @@
         .label-head {
             font-weight: bold;
         }
+
+        .results-table {
+            overflow-y: auto;
+            overflow-x: auto;
+            max-height: 300px;
+        }
+
+        .results-table thead th {
+            position: sticky;
+            top: 0;
+        }
     </style>
 </head>
 
@@ -73,7 +84,10 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="country" class="label-head">Country </label>
-                            <select class="form-control" id="country" required>
+                            <select class="form-control" id="country" name="country">
+                                <option value="" >
+                                    <c:out value=""  />
+                                </option>
                                 <c:forEach var="country" items="${params.countries}">
                                     <option value="${country.id}">
                                         <c:out value="${country.name}" />
@@ -85,7 +99,10 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="league" class="label-head">League</label>
-                            <select class="form-control" id="league" required>
+                            <select class="form-control" id="league" name="league">
+                                <option value="" >
+                                    <c:out value=""  />
+                                </option>
                                 <!-- league.get(0) is the name of the league, and league.get(1) is the country of the league -->
                                 <c:forEach var="league" items="${params.leagues}">
                                     <option class="${league.parent}" value="${league.id}">
@@ -98,10 +115,13 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="team1" class="label-head">Team 1 </label>
-                            <select class="form-control" id="team1" required>
+                            <select class="form-control" id="team1" name="team1">
+                                <option value="" >
+                                    <c:out value=""  />
+                                </option>
                                 <!-- team.get(0) is the name of the team, and team.get(1) is the league of the team -->
                                 <c:forEach var="team" items="${params.teams}">
-                                    <option class=="${team.parent}" value="${team.id}">
+                                    <option class="${team.parent}" value="${team.id}">
                                         <c:out value="${team.name}" />
                                     </option>
                                 </c:forEach>
@@ -109,34 +129,16 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="team2" class="label-head">Team 2 </label>
-                            <select class="form-control" id="team2" required>
+                            <select class="form-control" id="team2" name="team2">
+                                <option value="" >
+                                    <c:out value=""  />
+                                </option>
                                 <c:forEach var="team" items="${params.teams}">
-                                    <option class=="${team.parent}" value="${team.id}">
+                                    <option class="${team.parent}" value="${team.id}">
                                         <c:out value="${team.name}" />
                                     </option>
                                 </c:forEach>
                             </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-md-3">
-                            <label for="where" class="label-head">Home or Away</label>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="home" name="loc" value="home" class="custom-control-input"
-                                    checked>
-                                <label class="custom-control-label" for="home">Home</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="away" name="loc" value="away" class="custom-control-input">
-                                <label class="custom-control-label" for="away">Away</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="neutral" name="loc" value="neutral"
-                                    class="custom-control-input">
-                                <label class="custom-control-label" for="neutral">Neutral</label>
-                            </div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -159,18 +161,18 @@
                         </div>
                         <div class="col-md-9">
                             <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" id="won" name="result_type" value="won"
-                                    class="custom-control-input" checked>
+                                <input type="checkbox" id="won" name="won" 
+                                    class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="won">Won</label>
                             </div>
                             <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" id="lost" name="result_type" value="lost"
-                                    class="custom-control-input" checked>
+                                <input type="checkbox" id="lost" name="lost" 
+                                    class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="lost">Lost</label>
                             </div>
                             <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" id="draw" name="result_type" value="draw"
-                                    class="custom-control-input" checked>
+                                <input type="checkbox" id="draw" name="draw" 
+                                    class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="draw">Draw</label>
                             </div>
                         </div>
@@ -181,129 +183,248 @@
                         </div>
                         <div class="col-md-9">
                             <div class="custom-control custom-checkbox custom-control">
-                                <input type="checkbox" id="show_players" name="show_players" value="Players"
-                                    class="custom-control-input">
-                                <label class="custom-control-label" for="show_players">Players</label>
-                            </div>
-                            <div class="custom-control custom-checkbox custom-control">
-                                <input type="checkbox" id="goals" name="goals" value="Goals"
-                                    class="custom-control-input" checked>
+                                <input type="checkbox" id="goals" name="goals"
+                                     class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="goals">Goals</label>
                             </div>
                             <div class="custom-control custom-checkbox custom-control">
-                                <input type="checkbox" id="possession" name="possession" value="Possession"
-                                    class="custom-control-input" checked>
+                                <input type="checkbox" id="possession" name="possession" 
+                                     class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="possession">Possession</label>
                             </div>
                             <div class="custom-control custom-checkbox custom-control">
                                 <input type="checkbox" id="shots_on_target" name="shots_on_target"
-                                    value="Shots On Target" class="custom-control-input" checked>
+                                     class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="shots_on_target">Shots On Target</label>
                             </div>
                             <div class="custom-control custom-checkbox custom-control">
                                 <input type="checkbox" id="shots_off_target" name="shots_off_target"
-                                    value="Shots Off Target" class="custom-control-input" checked>
+                                     class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="shots_off_target">Shots Off Target</label>
                             </div>
                             <div class="custom-control custom-checkbox custom-control">
+                                <input type="checkbox" id="corner" name="corner"
+                                     class="custom-control-input" value="on"  checked>
+                                <label class="custom-control-label" for="corner">Corner</label>
+                            </div>
+                            <div class="custom-control custom-checkbox custom-control">
                                 <input type="checkbox" id="fouls_committed" name="fouls_committed"
-                                    value="Fouls Committed" class="custom-control-input" checked>
+                                     class="custom-control-input" value="on"  checked>
                                 <label class="custom-control-label" for="fouls_committed">Fouls Committed</label>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" onclick="showResults()">Search</button>
+                    <button id="search_matches_btn" class="btn btn-primary">Search</button>
                 </form>
             </div>
             <!-- Players Tab -->
             <div id="Players" class="tab-pane fade" aria-labelledby="players-tab">
                 <form action="players" method="post">
                     <input class="form-control" id="player_name" name="player_name" type="text" placeholder="Enter player's name" required>
-                    <button type="submit" class="btn btn-primary" onclick="showResults()">Search</button>
+                    <button id="search_players_btn" class="btn btn-primary">Search</button>
                 </form>
             </div>
             <!-- Teams Tab -->
             <div id="Teams" class="tab-pane fade" aria-labelledby="teams-tab">
                 <form action="teams" method="post">
                     <input class="form-control" id="team_name" name="team_name" type="text" placeholder="Enter team's name" required>
-                    <button type="submit" class="btn btn-primary" onclick="showResults()">Search</button>
+                    <button id="search_teams_btn" class="btn btn-primary">Search</button>
                 </form>
             </div>
         </div>
 
         <!-- Results -->
-        <c:if test="${not empty results}">
+        <div id="results">
             <div class="row">
                 <div class="col-md-12 my-2">
-                    <h4> Results (${results.size})</h4>
+                    <h4> Results <span id="num_of_results"></span></h4>
                     <div class="results-table">
                         <table id="results-table" class="table table-hover table-fixed">
-                            <thead class="thead-light">
-                                <tr>
-                                    <c:forEach items="${results.cols}" var="col">
-                                        <th scope="col">${col}</th>
-                                    </c:forEach>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach items="${results.rows}" var="row">
-                                    <tr>
-                                        <c:forEach items="${row}" var="rowItem">
-                                            <td>${rowItem}</td>
-                                        </c:forEach>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
-
-        </c:if>
+        </div>
 
 </body>
 
 <script>
 
-    // setDependency("country", "league");
-    // setDependency("league", "team1");
+    var allOptions = {};
 
-    function setDependency(attr1, attr2) {
+    hide("results");
+
+    setDependency("country", ["league"]);
+    setDependency("league", ["team1", "team2"]);
+
+    selectFirst("country");
+
+    function setDependency(parent, dependents) {
+
         //Get all options
-        var allOptions = $("#" + attr2 + " option");
+        for (let i=0; i < dependents.length; i++) {
+            allOptions[dependents[i]] = $("#" + dependents[i] + " option");
+        }
+
         //Listner when an option is selected
-        $("#" + attr1).change(function () {
-            //Clear the next select
-            $("#" + attr2 + " option").remove()
-            //Get the value of the selected option
-            var classN = $("#" + attr1 + " option:selected").val();
-            //Filter the next select's options
-            var opts = allOptions.filter("." + classN);
-            //Add blank option into the next select
-            $("#" + attr2).append(new Option("", ""));
-            //Add filered options into the next select
-            $.each(opts, function (i, j) {
-                $(j).appendTo("#" + attr2);
-            });
-            $("#" + attr2).attr("disabled", false);
-            //For team2 if team1 is able
-            if (attr2.localeCompare("team1") == 0) {
-                var allOptions2 = $("#team2 option");
-                var opts2 = allOptions2.filter("." + classN);
-                $("#team2 option").remove()
-                $("#team2").append(new Option("", ""));
-                $.each(opts2, function (i, j) {
-                    $(j).appendTo("#team2");
-                });
-                $("#team2").attr("disabled", false);
-            }
+        $("#" + parent).change(function() {
+            filterOptions(parent, dependents)
         });
     }
 
-    function showResults() {
-        document.getElementById("results-table").style.display = "block";
+    function filterOptions(parent, dependents) {
+
+        //Get the value of the selected option
+        let classN = $("#" + parent + " option:selected").val();
+
+        for (let i=0; i < dependents.length; i++) {
+
+            let dependent = dependents[i];
+
+            //Clear the next select
+            $("#" + dependent + " option").remove();
+
+            let opts = allOptions[dependent];
+            if (classN !== "") {
+                opts = opts.filter("." + classN);
+            }
+
+            //Add filered options into the next select
+            $.each(opts, function (i, j) {
+                $(j).appendTo("#" + dependent);
+            });
+
+            if (opts) {
+                selectFirst(dependent);
+            }
+
+        }
+        
     }
+
+    function selectFirst(elem) {
+
+        let allOptions = $("#" + elem + " option");
+
+        $("#" + elem).val(allOptions[0] && allOptions[0].value);
+
+        $("#" + elem).change();
+    }
+
+    function show(elem) {
+        $("#" + elem).show();
+    }
+    function hide(elem) {
+        $("#" + elem).hide();
+    }
+    
+    $("#search_matches_btn").click(function (e) {
+        e.preventDefault();
+
+        let initialText = e.currentTarget.textContent;
+
+        e.currentTarget.textContent = "Searching...";
+
+        search("matches", {
+            "country" : $("#country").val(),
+            "league" : $("#league").val(),
+            "team1" : $("#team1").val(),
+            "team2" : $("#team2").val(),
+            "from_date" : $("#from_date").val(),
+            "to_date" : $("#to_date").val(),
+            "won" : $("#won").is(':checked'),
+            "lost" : $("#lost").is(':checked'),
+            "draw" : $("#draw").is(':checked'),
+            "goals" : $("#goals").is(':checked'),
+            "possession" : $("#possession").is(':checked'),
+            "shots_on_target" : $("#shots_on_target").is(':checked'),
+            "shots_off_target" : $("#shots_off_target").is(':checked'),
+            "corner" : $("#corner").is(':checked'),
+            "fouls_committed" : $("#fouls_committed").is(':checked')
+        });
+
+        e.currentTarget.textContent = initialText;
+    });
+
+    $("#search_players_btn").click(function (e) {
+        e.preventDefault();
+
+        let initialText = e.currentTarget.textContent;
+
+        e.currentTarget.textContent = "Searching...";
+
+        search("players", {
+            "player_name" : $("#player_name").val()
+        });
+
+        e.currentTarget.textContent = initialText;
+    });
+
+    $("#search_teams_btn").click(function (e) {
+        e.preventDefault();
+
+        let initialText = e.currentTarget.textContent;
+
+        e.currentTarget.textContent = "Searching...";
+
+        search("teams", {
+            "team_name" : $("#team_name").val()
+        });
+
+        e.currentTarget.textContent = initialText;
+    });
+
+
+    function search(endPoint, params) {
+
+        $.post(endPoint, params, function (tableData) {
+            displayTable(tableData);
+        })
+        .fail(function (error) {
+            console.error(error);
+        });
+
+    }
+
+    function displayTable(tableData) {
+
+        hide("results");
+        if (tableData && tableData.rows && tableData.cols) {
+
+            let resultsTbl = $("#results-table");
+
+            $("#results-table tr").remove();
+
+            let header = $("<thead class='thead-light' />");
+
+            let tr = $("<tr />");
+            
+            for (let i=0; i < tableData.cols.length; i++) {
+                tr.append($("<th scope='col' />").html(tableData.cols[i]));
+            }
+
+            tr.appendTo(header);
+            header.appendTo(resultsTbl);
+
+            let tbody = $("<tbody />");
+            for (let i=0; i < tableData.rows.length; i++) {
+                var tbTr = $("<tr />");
+                for (let j=0; j < tableData.rows[i].length; j++) {
+                    tbTr.append($("<td />").html(tableData.rows[i][j]));
+                }
+                tbTr.appendTo(tbody);
+            }
+
+            tbody.appendTo(resultsTbl);
+
+            $("#num_of_results").empty();
+            $("#num_of_results").append("(" + tableData.rows.length + ")");
+
+            show("results");
+        }
+
+    }
+
 </script>
 
 </html>

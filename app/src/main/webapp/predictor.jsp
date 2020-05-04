@@ -27,6 +27,13 @@
         .label-head {
             font-weight: bold;
         }
+
+        .card-title {
+            background-size: contain;
+            background-color: lavender;
+            padding: 20;
+            text-align: center;
+        }
     </style>
 
 </head>
@@ -34,7 +41,7 @@
 <body>
 
     <div class="container">
-        <form action="predict" method="post">
+        <form action="predictor" method="post">
 
             <div class="row">
                 <div class="col-md-10">
@@ -44,7 +51,7 @@
                     <a href="/app/">Go to Explorer View</a>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top: 50px;">
                 <div class="col-md-5">
                     <div class="card">
                         <div class="card-body">
@@ -80,24 +87,22 @@
                                     <select class="form-control" id="team1" name="team1_id" required>
                                         <!-- team.get(0) is the name of the team, and team.get(1) is the league of the team -->
                                         <c:forEach var="team" items="${params.teams}">
-                                            <option class=="${team.parent}" value="${team.id}">
+                                            <option class="${team.parent}" value="${team.id}">
                                                 <c:out value="${team.name}" />
                                             </option>
                                         </c:forEach>
                                     </select>
                                 </div>
                             </div>
-                            <c:if test="${not empty result && result == '1')}">
-                                <div class="form-row">
-                                    <div class="col-md-12">
-                                        <h2>WINNER</h2>
-                                    </div>
+                            <div id="team1_winner_text" class="form-row">
+                                <div class="mx-auto" style="width: 200px;">
+                                    <h2 style="color: chartreuse">WINNER</h2>
                                 </div>
-                            </c:if>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2 p-5">
+                <div class="col-md-2" style="padding: 5rem">
                     <h5>Vs</h5>
                 </div>
                 <div class="col-md-5">
@@ -135,44 +140,138 @@
                                     <select class="form-control" id="team2" name="team2_id" required>
                                         <!-- team.get(0) is the name of the team, and team.get(1) is the league of the team -->
                                         <c:forEach var="team" items="${params.teams}">
-                                            <option class=="${team.parent}" value="${team.id}">
+                                            <option class="${team.parent}" value="${team.id}">
                                                 <c:out value="${team.name}" />
                                             </option>
                                         </c:forEach>
                                     </select>
                                 </div>
                             </div>
-                            <c:if test="${result eq '2'}">
-                                    <div class="form-row">
-                                        <div class="col-md-12">
-                                            <h2>WINNER</h2>
-                                        </div>
-                                    </div>
-                            </c:if>
+                            <div id="team2_winner_text" class="form-row">
+                                <div class="mx-auto" style="width: 200px;">
+                                    <h2 style="color: chartreuse">WINNER</h2>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="mx-auto" style="width: 200px;">
-                <button id="predict-btn" type="submit" name="predict-btn" class="btn btn-primary">Predict</button>
+            <div class="mx-auto" style="width: 98px;">
+                <button id="predict-btn" name="predict-btn" class="btn btn-primary">Predict</button>
             </div>
             
-            <c:if test="${result eq '0'}">
-                <div class="form-row">
-                    <div class="col-md-12">
-                        <h2>It's a draw</h2>
-                    </div>
-                </div>
-            </c:if>
+            <div id="tie_text" class="mx-auto form-row" style="width: 200px;">
+                <h2 style="color: chocolate">We think it will be a tie</h2>
+            </div>
         </form>
     </div>
 
 </body>
 
 <script type="text/javascript">
-    function predict() {
 
+    hidePrediction();
+
+    function hidePrediction() {
+        hide ("team1_winner_text");
+        hide ("team2_winner_text");
+        hide ("tie_text");
     }
+
+    $("#team1").change(function (e) {
+        hidePrediction();
+    });
+    $("#team2").change(function (e) {
+        hidePrediction();
+    });
+
+    $("#predict-btn").click(function (e) {
+        e.preventDefault();
+
+        let initialText = e.currentTarget.textContent;
+
+        e.currentTarget.textContent = "Evaluating..."
+
+        let team1 = $("#team1").val();
+        let team2 = $("#team2").val();
+
+        $.post('predictor', {
+            "team1_id" : team1,
+            "team2_id" : team2
+        }, function(response) { 
+            if (response) {
+                if (response === "1") {
+                    show ("team1_winner_text")
+                } else if (response === "2") {
+                    show ("team2_winner_text")
+                } else if (response === "0") {
+                    show ("tie_text")
+                }
+            }
+        })
+        .fail(function(error) {
+            console.error (error);
+        })
+        .always(function () {
+            e.currentTarget.textContent = initialText;
+        })
+    });
+
+    function show (elem) {
+        $("#" + elem).show();
+    }
+
+    function hide (elem) {
+        $("#" + elem).hide();
+    }
+
+    var allOptions = {};
+
+    setDependency("country1", "league1");
+    setDependency("country2", "league2");
+    setDependency("league1", "team1");
+    setDependency("league2", "team2");
+
+    selectFirst("country1");
+    selectFirst("country2");
+
+    function setDependency(attr1, attr2) {
+
+        //Get all options
+        allOptions[attr2] = $("#" + attr2 + " option");
+
+        //Listner when an option is selected
+        $("#" + attr1).change(function () {
+
+            //Clear the next select
+            $("#" + attr2 + " option").remove()
+
+            //Get the value of the selected option
+            var classN = $("#" + attr1 + " option:selected").val();
+
+            //Filter the next select's options
+            var opts = allOptions[attr2].filter("." + classN);
+
+            //Add filered options into the next select
+            $.each(opts, function (i, j) {
+                $(j).appendTo("#" + attr2);
+            });
+
+            if (opts) {
+                selectFirst(attr2);
+            }
+        });
+    }
+
+    function selectFirst(elem) {
+
+        let allOptions = $("#" + elem + " option");
+
+        $("#" + elem).val(allOptions[0].value);
+
+        $("#" + elem).change();
+    }
+
 </script>
 
 </html>

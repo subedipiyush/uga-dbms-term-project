@@ -70,29 +70,30 @@ public class PredictionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        DBResult results = null;
-
+        String result = "0";
         try {
 
-            results = SoccerDB.makePrediction(request.getParameterMap());
+            DBResult results = SoccerDB.makePrediction(request.getParameterMap());
 
             if (results != null) {
-                if (results.getRows().get(0).get(0).toString().equalsIgnoreCase("Team 1 victory")) {
-                    request.setAttribute("result", "1");
-                } else if (results.getRows().get(0).get(0).toString().equalsIgnoreCase("Team 2 victory")) {
-                    request.setAttribute("result", "2");
-                } else {
-                    request.setAttribute("result", "0");
+                if (results.getRows().size() > 0) {
+                    if (results.getRows().get(0).get(0).toString().equalsIgnoreCase("Team 1 victory")) {
+                        result = "1";
+                    } else if (results.getRows().get(0).get(0).toString().equalsIgnoreCase("Team 2 victory")) {
+                        result = "2";
+                    }
                 }
             }
 
-		
+            request.setAttribute("result", result);
+
         } catch (SQLException | ClassNotFoundException | NoSuchElementException e) {
-            
+            e.printStackTrace();
             request.setAttribute("error", e.getMessage());
         }
 
-        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
+        response.getWriter().write(result); // ajax request from jsp, therefore not forwarding
+        // request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
     }
 
 }

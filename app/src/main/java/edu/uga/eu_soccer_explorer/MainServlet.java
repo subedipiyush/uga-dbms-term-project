@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 /**
  * Entry point of the servlet Handles all server side requests
  * 
@@ -86,15 +89,23 @@ public class MainServlet extends HttpServlet {
                     // unsupported endpoint
             }
 
-            request.setAttribute("results", results);
-            request.setAttribute("success_msg", "Query execution successful");
+            // request.setAttribute("results", results);
+            // request.setAttribute("success_msg", "Query execution successful");
 
         } catch (SQLException | ClassNotFoundException | NoSuchElementException e) {
             e.printStackTrace();
             request.setAttribute("error", e.getMessage());
         }
 
-        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        //marshalling the data in JSON format
+        String json = new ObjectMapper().writeValueAsString(results);
+        response.getWriter().write(json);
+
+        // request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
     }
 
 }
