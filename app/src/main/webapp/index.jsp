@@ -341,9 +341,10 @@
             "shots_off_target" : $("#shots_off_target").is(':checked'),
             "corner" : $("#corner").is(':checked'),
             "fouls_committed" : $("#fouls_committed").is(':checked')
+        }, () => {
+            e.currentTarget.textContent = initialText;
         });
 
-        e.currentTarget.textContent = initialText;
     });
 
     $("#search_players_btn").click(function (e) {
@@ -355,9 +356,10 @@
 
         search("players", {
             "player_name" : $("#player_name").val()
+        }, () => {
+            e.currentTarget.textContent = initialText;
         });
 
-        e.currentTarget.textContent = initialText;
     });
 
     $("#search_teams_btn").click(function (e) {
@@ -369,20 +371,24 @@
 
         search("teams", {
             "team_name" : $("#team_name").val()
+        }, () => {
+            e.currentTarget.textContent = initialText;
         });
 
-        e.currentTarget.textContent = initialText;
     });
 
 
-    function search(endPoint, params) {
+    function search(endPoint, params, callback) {
 
         $.post(endPoint, params, function (tableData) {
             displayTable(tableData);
         })
         .fail(function (error) {
             console.error(error);
-        });
+        })
+        .always(function () {
+            callback();
+        })
 
     }
 

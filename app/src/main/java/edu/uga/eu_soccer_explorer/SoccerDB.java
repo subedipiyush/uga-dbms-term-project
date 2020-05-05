@@ -17,7 +17,7 @@ public class SoccerDB {
             throws ClassNotFoundException, NoSuchElementException, SQLException {
 
         // base query
-        String query = "SELECT (SELECT name FROM country WHERE id = eu_soccer.Match.country_id) as country, (SELECT name FROM league WHERE id = eu_soccer.Match.league_id) as league, (SELECT team_long_name FROM Team WHERE team_api_id = eu_soccer.Match.home_team_api_id) as home_team, (SELECT team_long_name FROM Team WHERE team_api_id = eu_soccer.Match.away_team_api_id) as away_team, date {dynamic-field-list} FROM eu_soccer.Match WHERE 1=1";
+        String query = "SELECT (SELECT name FROM country WHERE id = m.country_id) as country, (SELECT name FROM league WHERE id = m.league_id) as league, (SELECT team_long_name FROM Team WHERE team_api_id = m.home_team_api_id) as home_team, (SELECT team_long_name FROM Team WHERE team_api_id = m.away_team_api_id) as away_team, date {dynamic-field-list} FROM eu_soccer.match as m WHERE 1=1";
 
         // construct dynamic field list
         List<String> selectFields = new ArrayList<>();
@@ -39,20 +39,21 @@ public class SoccerDB {
         query = applyFilter(query, "country_id", parameters.get("country"), "{0} = '{1}' ");
         query = applyFilter(query, "league_id", parameters.get("league"), "{0} = '{1}' ");
 
-        query = applyFilter(query, "home_team_api_id", parameters.get("team1"), "({0} IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ) OR away_team_api_id IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ))");
-        query = applyFilter(query, "home_team_api_id", parameters.get("team2"), "({0} IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ) OR away_team_api_id IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ))");
+        query = applyFilter(query, "home_team_api_id", parameters.get("team1"), "({0} IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ) OR m.away_team_api_id IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ))");
+        query = applyFilter(query, "home_team_api_id", parameters.get("team2"), "({0} IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ) OR m.away_team_api_id IN (SELECT team_api_id FROM Team WHERE Id = '{1}' ))");
 
         query = applyFilter(query, "date", parameters.get("from_date"), "{0} >= '{1}' ");
         query = applyFilter(query, "date", parameters.get("to_date"), "{0} <= '{1}' ");
 
+
         if (parameters.get("won") == null || parameters.get("won").length == 0 || parameters.get("won")[0].equals("false")) {
-            query = applyFilter(query, "home_team_goal", new String[] { "away_team_goal" }, "{0} <= '{1}' ");
+            query = applyFilter(query, "home_team_goal", new String[] { "(select away_team_goal from eu_soccer.match where id = m.id)" }, "{0} <= {1} ");
         }
         if (parameters.get("lost") == null || parameters.get("lost").length == 0 ||  parameters.get("lost")[0].equals("false")) {
-            query = applyFilter(query, "home_team_goal", new String[] { "away_team_goal" }, "{0} > '{1}' ");
+            query = applyFilter(query, "home_team_goal", new String[] { "(select away_team_goal from eu_soccer.match where id = m.id)" }, "{0} >= {1} ");
         }
         if (parameters.get("draw") == null || parameters.get("draw").length == 0 ||  parameters.get("draw")[0].equals("false")) {
-            query = applyFilter(query, "home_team_goal", new String[] { "away_team_goal" }, "{0} = '{1}' ");
+            query = applyFilter(query, "home_team_goal", new String[] { "(select away_team_goal from eu_soccer.match where id = m.id)" }, "{0} != {1} ");
         }
 
         return DBEngine.getInstance().executeQuery(query);
@@ -69,7 +70,7 @@ public class SoccerDB {
 
         if (pValues != null && pValues.length > 0 && !pValues[0].isBlank()) {
             query += " AND {filter-string} ".replace("{filter-string}", filterString);
-            query = query.replaceAll("\\{0\\}", colName).replaceAll("\\{1\\}", pValues[0]);
+            query = query.replaceAll("\\{0\\}", "m." + colName).replaceAll("\\{1\\}", pValues[0]);
         }
 
         return query;
@@ -103,7 +104,7 @@ public class SoccerDB {
             throws ClassNotFoundException, NoSuchElementException, SQLException {
 
         if (parameters.containsKey("team1_id") && parameters.containsKey("team2_id")) {
-            String queryToExecute = Queries.PREDICTION_QUERY.replace("{0}", parameters.get("team1_id")[0]).replace("'{1}' ", parameters.get("team2_id")[0]);
+            String queryToExecute = Queries.PREDICTION_QUERY.replace("{0}", parameters.get("team1_id")[0]).replace("{1}", parameters.get("team2_id")[0]);
 
             return DBEngine.getInstance().executeQuery(queryToExecute);
         }
